@@ -6,6 +6,7 @@ import com.sohair.moneymanager.entity.ProfileEntity;
 import com.sohair.moneymanager.repository.ProfileRepository;
 import com.sohair.moneymanager.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -26,6 +27,8 @@ public class ProfileService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    @Value("${app.backend.url}")
+    private String BACKEND_URL;
 
     public ProfileDTO registerProfile(ProfileDTO profileDTO){
         ProfileEntity newProfile = toEntity(profileDTO);
@@ -33,7 +36,7 @@ public class ProfileService {
         profileRepository.save(newProfile);
 
         // send email implementation
-        String activationLink = "http://localhost:8080/api/v1.0/profile/activate?token=" + newProfile.getActivationToken();
+        String activationLink = BACKEND_URL + "/api/v1.0/profile/activate?token=" + newProfile.getActivationToken();
         String subject = "Activate your Money Manager account";
         String body = "Click here to activate Money Manager account: " + activationLink;
         emailService.sendEmail(newProfile.getEmail(), subject, body);

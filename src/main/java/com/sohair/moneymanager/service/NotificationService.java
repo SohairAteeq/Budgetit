@@ -19,7 +19,7 @@ import java.util.List;
 public class NotificationService {
 
     @Value("${app.frontend.url}")
-    private String frontendUrl = "http://localhost:5173";
+    private String frontendUrl;
 
     private final ProfileService profileService;
     private final EmailService emailService;
