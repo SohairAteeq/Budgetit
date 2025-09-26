@@ -81,6 +81,7 @@ public class IncomeService {
                 .name(entity.getName())
                 .amount(entity.getAmount())
                 .date(entity.getDate())
+                .icon(entity.getIcon())
                 .categoryId(entity.getCategory().getId())
                 .profileId(entity.getProfile().getId())
                 .createdAt(entity.getCreatedAt())
