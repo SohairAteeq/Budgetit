@@ -5,10 +5,9 @@ import { ApiEndPoints } from "../util/ApiEndPoints.js";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../util/axiosConfig.jsx";
-import {jwtDecode} from "jwt-decode";
 import { AppContext } from "../context/AppContext";
-import defaultImage2 from "../assets/defaultImage2.jpg";
 import NavbarHome from "../components/NavbarHome.jsx";
+import Footer from "../components/Footer.jsx";
 
 const Login = () => {
 
@@ -183,6 +182,7 @@ const Login = () => {
             </a>
           </p>
         </div>
+        <Footer/>
       </div>
     </>
   );

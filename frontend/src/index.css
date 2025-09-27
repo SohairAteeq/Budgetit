@@ -6,3 +6,31 @@
 body {
     font-family: "Roboto Mono", monospace; /* better fallback than sans-serif */
 }
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.6); /* gray-400 */
+    border-radius: 9999px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.8); /* gray-500 */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.6); /* gray-600 */
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(55, 65, 81, 0.8); /* gray-700 */
+  }

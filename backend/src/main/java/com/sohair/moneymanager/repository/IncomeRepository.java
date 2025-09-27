@@ -17,7 +17,8 @@ public interface IncomeRepository extends JpaRepository<IncomeEntity, Long> {
 
     List<IncomeEntity> findByProfile_IdOrderByDateDesc(Long profileId);
 
-    List<IncomeEntity> findTop5ByProfile_IdOrderByDateDesc(Long profileId);
+    // Get top 5 latest incomes for a profile ordered by createdAt (newest first)
+    List<IncomeEntity> findTop5ByProfile_IdOrderByCreatedAtDesc(Long profileId);
 
     @Query("SELECT SUM(e.amount) FROM IncomeEntity e WHERE e.profile.id = :profileId")
     BigDecimal findTotalIncomesByProfileId(Long profileId);

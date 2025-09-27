@@ -15,5 +15,9 @@ export const ApiEndPoints = {
     // Incomes
     incomes: "/incomes",
     deleteIncome: (incomeId) => `/incomes?incomeId=${incomeId}`,
+    // Expenses
+    expenses: "/expenses",
+    deleteExpense: (expenseId) => `/expenses?expenseId=${expenseId}`,
+    // Cloudinary
     UPLOAD_IMAGE: "https://api.cloudinary.com/v1_1/dfnj9sbrz/image/upload" 
-}
+};

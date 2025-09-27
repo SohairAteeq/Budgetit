@@ -4,6 +4,7 @@ import AfterLoginNavbar from "../components/AfterLoginNavbar.jsx";
 import axiosConfig from "../util/axiosConfig.jsx";
 import { ApiEndPoints } from "../util/ApiEndPoints.js";
 import Picker from "emoji-picker-react";
+import Footer from "../components/Footer.jsx";
 
 const emptyForm = { id: null, name: "", type: "EXPENSE", icon: "💡" };
 
@@ -316,6 +317,7 @@ const Category = () => {
             </div>
           </div>
         </div>
+        <Footer/>
       </div>
     </div>
   );

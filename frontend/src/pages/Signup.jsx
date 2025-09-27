@@ -5,6 +5,8 @@ import { ApiEndPoints } from "../util/ApiEndPoints.js";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../util/axiosConfig.jsx";
+import Footer from "../components/Footer.jsx";
+
 
 // Components
 import AvatarUpload from "../components/AvatarUpload.jsx";
@@ -172,6 +174,7 @@ const Signup = () => {
             </a>
           </p>
         </div>
+        <Footer/>
       </div>
     </>
   );
