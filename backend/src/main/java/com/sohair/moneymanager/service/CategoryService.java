@@ -64,6 +64,7 @@ public class CategoryService {
         return CategoryEntity.builder()
                 .id(categoryDTO.getId())
                 .name(categoryDTO.getName())
+                .icon(categoryDTO.getIcon())
                 .type(categoryDTO.getType())
                 .profile(profile)
                 .build();

@@ -27,8 +27,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDTO) {
         ProfileEntity profile = profileService.getCurrentProfile(SecurityContextHolder.getContext().getAuthentication().getName());
-        categoryService.saveCategory(categoryDTO, profile);
-        return new ResponseEntity<>(categoryDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryService.saveCategory(categoryDTO, profile), HttpStatus.CREATED);
     }
 
     @GetMapping

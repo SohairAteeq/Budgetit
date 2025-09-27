@@ -55,10 +55,10 @@ public class ProfileController {
     }
 
     @GetMapping("/getProfile")
-    public ResponseEntity<ProfileEntity> getProfile(){
+    public ResponseEntity<ProfileDTO> getProfile(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ProfileEntity profileEntity = profileRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("Profile not found"));
-        return ResponseEntity.ok(profileEntity);
+        ProfileDTO profileDTO = profileService.getPublicProfile(authentication.getName());
+        return ResponseEntity.ok(profileDTO);
     }
 
 }
