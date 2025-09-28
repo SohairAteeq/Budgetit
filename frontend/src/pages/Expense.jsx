@@ -7,9 +7,8 @@ import { Download, Mail, DollarSign, List } from "lucide-react";
 import Footer from "../components/Footer.jsx";
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
+  LineChart,
+  Line,
   YAxis,
   Tooltip,
   CartesianGrid,
@@ -26,7 +25,6 @@ const Expenses = () => {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  // Emoji picker + form visibility
   const [showEmoji, setShowEmoji] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -40,25 +38,35 @@ const Expenses = () => {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
+  // Total
   const total = useMemo(() => {
     return expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
   }, [expenses]);
 
-  const monthlyData = useMemo(() => {
-    const map = {};
-    expenses.forEach((e) => {
-      const d = new Date(e.createdAt || e.date || Date.now());
-      const key = `${d.toLocaleString("default", {
-        month: "short",
-      })} ${d.getFullYear()}`;
-      map[key] = (map[key] || 0) + Number(e.amount || 0);
-    });
-    return Object.keys(map).map((month) => ({
-      month,
-      amount: map[month],
-    }));
+  // Line chart data (same as Income)
+  const lineData = useMemo(() => {
+    return expenses
+      .map((expense) => {
+        const d = new Date(expense.createdAt || expense.date || Date.now());
+        return {
+          fullDate: d,
+          amount: Number(expense.amount || 0),
+        };
+      })
+      .sort((a, b) => a.fullDate - b.fullDate);
   }, [expenses]);
 
+  // Date formatter
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // Fetch
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -84,6 +92,7 @@ const Expenses = () => {
     fetchData();
   }, []);
 
+  // Submit
   const submitForm = async (e) => {
     e.preventDefault();
     const payload = {
@@ -109,6 +118,7 @@ const Expenses = () => {
     }
   };
 
+  // Delete
   const deleteExpense = async (expense) => {
     if (!expense?.id) return;
     const ok = window.confirm(`Delete expense "${expense.name}"?`);
@@ -122,6 +132,7 @@ const Expenses = () => {
     }
   };
 
+  // Emoji close
   const handleCloseEmoji = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -131,10 +142,12 @@ const Expenses = () => {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-900 dark:to-black text-gray-900 dark:text-white transition-colors duration-500">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-900 dark:to-black text-gray-900 dark:text-white transition-colors duration-500">
       <Sidebar />
 
-      <div className="flex-1 flex overflow-hidden flex-col">
+      {/* Main flex layout */}
+      <div className="flex-1 flex flex-col">
+        {/* Navbar */}
         <div className="sticky top-0 z-50">
           <AfterLoginNavbar>
             <button
@@ -148,14 +161,15 @@ const Expenses = () => {
           </AfterLoginNavbar>
         </div>
 
-        <div className="p-5 md:p-7 space-y-6 overflow-y-auto">
+        {/* Content */}
+        <main className="flex-1 p-5 md:p-7 space-y-6 overflow-y-auto overflow-x-hidden w-full max-w-full">
           {/* Header */}
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h1 className="text-3xl font-extrabold bg-gradient-to-r from-red-400 to-rose-500 text-transparent bg-clip-text">
               Expenses
             </h1>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500 dark:text-gray-300">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                 Total this month:{" "}
                 <span className="font-semibold text-red-400">
                   ${total.toLocaleString()}
@@ -166,33 +180,50 @@ const Expenses = () => {
                   setForm(emptyForm);
                   setShowForm(true);
                 }}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow-lg transition-transform duration-500 hover:scale-105"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow-lg text-white transition-transform duration-500 hover:scale-105 whitespace-nowrap"
               >
                 New Expense
               </button>
             </div>
           </div>
 
-          {/* Create Expense Form */}
+          {/* Form */}
           {showForm && (
-            <div className="rounded-2xl p-6 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg border border-red-400/20">
+            <div className="rounded-2xl p-6 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg border border-red-400/20 w-full">
               <form
                 onSubmit={submitForm}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
               >
                 {/* Name */}
-                <div className="col-span-1">
+                <div className="w-full">
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Name
                   </label>
+                  <input
+                    value={form.name}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, name: e.target.value }))
+                    }
+                    placeholder="e.g., Rent"
+                    className="w-full px-3 py-2 rounded-lg border border-red-400/30 bg-white/60 dark:bg-gray-700/40 focus:ring-2 focus:ring-red-400 outline-none"
+                  />
+                </div>
+
+                {/* Amount */}
+                <div className="w-full">
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Amount
+                  </label>
                   <div className="relative">
                     <input
-                      value={form.name}
+                      value={form.amount}
                       onChange={(e) =>
-                        setForm((f) => ({ ...f, name: e.target.value }))
+                        setForm((f) => ({ ...f, amount: e.target.value }))
                       }
-                      placeholder="e.g., Rent"
-                      className="w-full px-10 py-2 rounded-lg border border-red-400/30 bg-white/60 dark:bg-gray-700/40 focus:ring-2 focus:ring-red-400 outline-none"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="no-spinner w-full pl-10 pr-3 py-2 rounded-lg border border-red-400/30 bg-white/60 dark:bg-gray-700/40 focus:ring-2 focus:ring-red-400 outline-none"
                     />
                     <DollarSign
                       className="absolute left-3 top-2.5 text-red-400"
@@ -201,25 +232,8 @@ const Expenses = () => {
                   </div>
                 </div>
 
-                {/* Amount */}
-                <div className="col-span-1">
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                    Amount
-                  </label>
-                  <input
-                    value={form.amount}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, amount: e.target.value }))
-                    }
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="no-spinner w-full px-3 py-2 rounded-lg border border-red-400/30 bg-white/60 dark:bg-gray-700/40 focus:ring-2 focus:ring-red-400 outline-none"
-                  />
-                </div>
-
                 {/* Category */}
-                <div className="col-span-1">
+                <div className="w-full">
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Category
                   </label>
@@ -229,7 +243,7 @@ const Expenses = () => {
                       onChange={(e) =>
                         setForm((f) => ({ ...f, categoryId: e.target.value }))
                       }
-                      className="appearance-none w-full px-10 py-2 rounded-lg border border-red-400/30 bg-white/60 dark:bg-gray-700/40 focus:ring-2 focus:ring-red-400 outline-none"
+                      className="appearance-none w-full pl-10 py-2 rounded-lg border border-red-400/30 bg-white/60 dark:bg-gray-700/40 focus:ring-2 focus:ring-red-400 outline-none"
                     >
                       <option value="">Select a category</option>
                       {categories.map((cat) => (
@@ -246,7 +260,7 @@ const Expenses = () => {
                 </div>
 
                 {/* Icon + Buttons */}
-                <div className="flex gap-2 items-end">
+                <div className="flex flex-col sm:flex-row lg:flex-row gap-2 items-stretch w-full lg:col-span-3">
                   <button
                     type="button"
                     onClick={() => setShowEmoji(true)}
@@ -254,13 +268,15 @@ const Expenses = () => {
                   >
                     <span className="text-xl">{form.icon}</span>
                   </button>
+
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow text-white transition"
+                    className="px-4 py-2 min-w-[90px] rounded-xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow text-white transition"
                   >
                     {saving ? "Saving..." : "Add"}
                   </button>
+
                   <button
                     type="button"
                     onClick={() => {
@@ -268,7 +284,7 @@ const Expenses = () => {
                       setForm(emptyForm);
                       setShowEmoji(false);
                     }}
-                    className="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                    className="px-4 py-2 min-w-[80px] rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                   >
                     Cancel
                   </button>
@@ -304,27 +320,39 @@ const Expenses = () => {
 
           {/* Chart + List */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chart */}
-            <div className="rounded-xl p-5 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg border border-red-400/20">
+            {/* Line Chart */}
+            <div className="rounded-xl p-5 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg border border-red-400/20 overflow-hidden">
               <h3 className="text-lg font-semibold mb-4 text-red-400">
-                Monthly Expense Distribution
+                Expenses Over Time
               </h3>
-              {monthlyData.length > 0 ? (
+              {lineData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                    <XAxis dataKey="month" stroke="#aaa" />
-                    <YAxis stroke="#aaa" />
+                  <LineChart data={lineData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <YAxis stroke="#888" />
                     <Tooltip
+                      formatter={(value) => [`$${value.toLocaleString()}`, "Amount"]}
+                      labelFormatter={(label, payload) =>
+                        payload && payload[0]
+                          ? formatDate(payload[0].payload.fullDate)
+                          : ""
+                      }
                       contentStyle={{
-                        backgroundColor: "#1f2937",
+                        backgroundColor: darkMode ? "#111827" : "#f9fafb",
                         border: "1px solid #f87171",
                         borderRadius: "8px",
-                        color: "#fff",
+                        color: darkMode ? "#fff" : "#111",
                       }}
                     />
-                    <Bar dataKey="amount" fill="#f87171" radius={[8, 8, 0, 0]} />
-                  </BarChart>
+                    <Line
+                      type="monotone"
+                      dataKey="amount"
+                      stroke="#f87171"
+                      strokeWidth={3}
+                      dot={{ r: 5, fill: "#f87171" }}
+                      activeDot={{ r: 7, fill: "#ef4444" }}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               ) : (
                 <div className="h-40 flex items-center justify-center text-gray-400">
@@ -333,10 +361,10 @@ const Expenses = () => {
               )}
             </div>
 
-            {/* Recent Expenses */}
-            <div className="rounded-xl p-5 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg border border-red-400/20">
+            {/* Monthly Expenses */}
+            <div className="rounded-xl p-5 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg border border-red-400/20 overflow-hidden">
               <h3 className="text-lg font-semibold mb-3 text-red-400">
-                Recent Expenses
+                Monthly Expenses
               </h3>
               {loading ? (
                 <div className="h-48 flex items-center justify-center text-gray-400">
@@ -349,7 +377,7 @@ const Expenses = () => {
                       key={exp.id}
                       className="flex items-center justify-between p-3 rounded-lg bg-white/20 dark:bg-gray-700/30 hover:bg-red-500/10 transition"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div className="w-9 h-9 rounded-full flex items-center justify-center bg-red-500/20">
                           <span className="text-lg">
                             {typeof exp.icon === "string" && exp.icon
@@ -357,20 +385,20 @@ const Expenses = () => {
                               : "💸"}
                           </span>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium">{exp.name}</p>
-                          <p className="text-xs text-gray-400">
+                        <div className="truncate">
+                          <p className="text-sm font-medium truncate">{exp.name}</p>
+                          <p className="text-xs text-gray-400 truncate">
                             {exp.category?.icon} {exp.category?.name}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-red-400">
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <span className="text-sm font-semibold text-red-400 whitespace-nowrap">
                           -${Number(exp.amount || 0).toLocaleString()}
                         </span>
                         <button
                           onClick={() => deleteExpense(exp)}
-                          className="px-3 py-1 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-400 hover:bg-red-500/20"
+                          className="px-3 py-1 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-400 hover:bg-red-500/20 whitespace-nowrap"
                         >
                           Delete
                         </button>
@@ -385,18 +413,21 @@ const Expenses = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-4 mt-6">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-400/30 hover:bg-blue-500/20 text-blue-400">
+          <div className="flex flex-wrap justify-end gap-4 mt-6">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-400/30 hover:bg-blue-500/20 text-blue-400 whitespace-nowrap">
               <Mail size={18} /> Email Data
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-400/30 hover:bg-purple-500/20 text-purple-400">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-400/30 hover:bg-purple-500/20 text-purple-400 whitespace-nowrap">
               <Download size={18} /> Download Data
             </button>
           </div>
-        </div>
-        <Footer/>
+        </main>
+
+        {/* Footer */}
+        <Footer />
       </div>
 
+      {/* Styles */}
       <style>{`
         input[type=number].no-spinner::-webkit-inner-spin-button,
         input[type=number].no-spinner::-webkit-outer-spin-button {

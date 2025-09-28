@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import ReactDOM from "react-dom";
 import Sidebar from "../components/Sidebar.jsx";
 import AfterLoginNavbar from "../components/AfterLoginNavbar.jsx";
 import axiosConfig from "../util/axiosConfig.jsx";
@@ -106,7 +107,7 @@ const Category = () => {
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br 
       from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-black 
       text-gray-900 dark:text-white transition-colors duration-500 overflow-x-hidden">
-      
+
       {/* Sidebar */}
       <div className="md:w-64">
         <Sidebar />
@@ -137,25 +138,35 @@ const Category = () => {
 
             {/* Filter + Create */}
             <div className="flex flex-wrap items-center gap-3">
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="bg-white/10 dark:bg-gray-800 border border-white/20 rounded-lg px-3 py-2 text-sm focus:outline-none transition-colors duration-500"
-              >
-                <option value="ALL">All</option>
-                <option value="INCOME">Income</option>
-                <option value="EXPENSE">Expense</option>
-              </select>
+              <div className="w-full sm:w-auto">
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="w-full sm:w-40 md:w-48 bg-white/10 dark:bg-gray-800 
+                             border border-gray-300 dark:border-gray-600 rounded-md 
+                             px-2 py-1.5 text-sm text-gray-800 dark:text-gray-200 
+                             focus:outline-none focus:ring-2 focus:ring-cyan-400 
+                             transition duration-300"
+                >
+                  <option value="ALL">All</option>
+                  <option value="INCOME">Income</option>
+                  <option value="EXPENSE">Expense</option>
+                </select>
+              </div>
+
               <button
                 onClick={startCreate}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-600 hover:to-indigo-600 shadow-lg transition-transform duration-500 hover:scale-105 w-full sm:w-auto"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-500 
+                           hover:from-cyan-600 hover:to-indigo-600 shadow-lg 
+                           transition-transform duration-500 hover:scale-105 
+                           w-full sm:w-auto"
               >
                 New Category
               </button>
             </div>
           </div>
 
-          {/* Form (only visible when creating/editing) */}
+          {/* Form (create/edit) */}
           {showForm && (
             <div className="rounded-xl p-5 bg-white/40 dark:bg-white/5 backdrop-blur-lg shadow-lg mb-6 relative transition-colors duration-500">
               {saving && (
@@ -172,21 +183,23 @@ const Category = () => {
                         r="10"
                         stroke="currentColor"
                         strokeWidth="4"
-                      ></circle>
+                      />
                       <path
                         className="opacity-75"
                         fill="currentColor"
                         d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
+                      />
                     </svg>
                     Saving...
                   </div>
                 </div>
               )}
+
               <form
                 onSubmit={submitForm}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end"
               >
+                {/* Name */}
                 <div className="sm:col-span-2">
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Name
@@ -197,9 +210,14 @@ const Category = () => {
                       setForm((f) => ({ ...f, name: e.target.value }))
                     }
                     placeholder="e.g., Groceries, Salary"
-                    className="w-full px-3 py-2 rounded-lg border border-white/20 bg-white/60 dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none transition-colors duration-500"
+                    className="w-full px-3 py-2 rounded-lg border border-white/20 
+                               bg-white/60 dark:bg-white/10 
+                               text-gray-900 dark:text-white 
+                               focus:outline-none transition-colors duration-500"
                   />
                 </div>
+
+                {/* Type */}
                 <div>
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Type
@@ -209,46 +227,41 @@ const Category = () => {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, type: e.target.value }))
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-white/20 bg-white/60 dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none transition-colors duration-500"
+                    className="w-full px-3 py-2 rounded-lg border border-white/20 
+                               bg-white/60 dark:bg-white/10 
+                               text-gray-900 dark:text-white 
+                               focus:outline-none transition-colors duration-500"
                   >
                     <option value="INCOME">Income</option>
                     <option value="EXPENSE">Expense</option>
                   </select>
                 </div>
+
+                {/* Icon */}
                 <div className="relative">
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Icon
                   </label>
                   <button
                     type="button"
-                    onClick={() => setShowEmoji((s) => !s)}
-                    className="w-full px-3 py-2 rounded-lg border border-white/20 bg-white/60 dark:bg-white/10 text-gray-900 dark:text-white text-left transition-colors duration-500"
+                    onClick={() => setShowEmoji(true)}
+                    className="w-full px-3 py-2 rounded-lg border border-white/20 
+                               bg-white/60 dark:bg-white/10 
+                               text-gray-900 dark:text-white text-left 
+                               transition-colors duration-500"
                   >
                     <span className="text-xl">{form.icon}</span>
                   </button>
-                  {showEmoji && (
-                    <div className="fixed inset-0 z-[10000]">
-                      <div
-                        className="absolute inset-0 bg-black/40"
-                        onClick={() => setShowEmoji(false)}
-                      />
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <Picker
-                          theme={darkMode ? "dark" : "light"}
-                          onEmojiClick={(emoji) => {
-                            const ch = emoji.emoji || emoji.native || "😀";
-                            setForm((f) => ({ ...f, icon: ch }));
-                            setShowEmoji(false);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
+
+                {/* Actions */}
                 <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg transition-transform duration-500 hover:scale-105 w-full sm:w-auto"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 
+                               hover:from-green-600 hover:to-emerald-700 shadow-lg 
+                               transition-transform duration-500 hover:scale-105 
+                               w-full sm:w-auto"
                   >
                     {form.id ? "Update Category" : "Create Category"}
                   </button>
@@ -259,12 +272,16 @@ const Category = () => {
                       setShowForm(false);
                       setShowEmoji(false);
                     }}
-                    className="px-4 py-2 rounded-lg bg-white/60 dark:bg-white/10 border border-white/20 transition-colors duration-500 w-full sm:w-auto"
+                    className="px-4 py-2 rounded-lg bg-white/60 dark:bg-white/10 
+                               border border-white/20 
+                               transition-colors duration-500 
+                               w-full sm:w-auto"
                   >
                     Cancel
                   </button>
                 </div>
               </form>
+
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
             </div>
           )}
@@ -283,9 +300,15 @@ const Category = () => {
                 filtered.map((cat) => (
                   <div
                     key={cat.id}
-                    className="group relative rounded-xl p-5 bg-white/60 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 backdrop-blur-lg shadow-lg text-left transition-all duration-500 hover:scale-105 overflow-hidden"
+                    className="group relative rounded-xl p-5 bg-white/60 dark:bg-white/5 
+                               hover:bg-white/80 dark:hover:bg-white/10 
+                               backdrop-blur-lg shadow-lg text-left 
+                               transition-all duration-500 hover:scale-105 overflow-hidden"
                   >
-                    <span className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/20 blur-3xl rounded-full group-hover:bg-cyan-500/40 transition duration-500" />
+                    <span className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/20 
+                                     blur-3xl rounded-full group-hover:bg-cyan-500/40 
+                                     transition duration-500" />
+
                     <div className="flex items-center justify-between">
                       <span className="text-3xl">{cat.icon || "🗂️"}</span>
                       <span
@@ -298,11 +321,16 @@ const Category = () => {
                         {(cat.type || "EXPENSE").toUpperCase()}
                       </span>
                     </div>
+
                     <h3 className="mt-3 text-lg font-semibold">{cat.name}</h3>
+
                     <div className="mt-4 flex items-center gap-2">
                       <button
                         onClick={() => startEdit(cat)}
-                        className="px-3 py-1 rounded-lg bg-white/50 dark:bg-white/10 border border-white/20 text-sm hover:bg-white/70 dark:hover:bg-white/15 transition-colors duration-500"
+                        className="px-3 py-1 rounded-lg bg-white/50 dark:bg-white/10 
+                                   border border-white/20 text-sm 
+                                   hover:bg-white/70 dark:hover:bg-white/15 
+                                   transition-colors duration-500"
                       >
                         Edit
                       </button>
@@ -317,8 +345,34 @@ const Category = () => {
             </div>
           </div>
         </div>
-        <Footer/>
+
+        {/* Footer */}
+        <Footer />
       </div>
+
+      {/* Emoji Picker Portal */}
+      {showEmoji &&
+        ReactDOM.createPortal(
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center">
+            {/* Overlay */}
+            <div
+              className="absolute inset-0 bg-black/40"
+              onClick={() => setShowEmoji(false)}
+            />
+            {/* Picker */}
+            <div className="relative z-50 animate-fadeIn scale-95">
+              <Picker
+                theme={darkMode ? "dark" : "light"}
+                onEmojiClick={(emoji) => {
+                  const ch = emoji.emoji || emoji.native || "😀";
+                  setForm((f) => ({ ...f, icon: ch }));
+                  setShowEmoji(false);
+                }}
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

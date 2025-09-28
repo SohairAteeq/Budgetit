@@ -18,6 +18,8 @@ export const ApiEndPoints = {
     // Expenses
     expenses: "/expenses",
     deleteExpense: (expenseId) => `/expenses?expenseId=${expenseId}`,
+    // Filters
+    filters: "/filters/filter",
     // Cloudinary
     UPLOAD_IMAGE: "https://api.cloudinary.com/v1_1/dfnj9sbrz/image/upload" 
 };

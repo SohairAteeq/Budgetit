@@ -9,7 +9,8 @@ export const AppContextProvider = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false); 
   const navigate = useNavigate();
 
-  // ✅ Load sidebar state from localStorage after first render
+  const publicRoutes = ["/home", "/login", "/signup"];
+
   useEffect(() => {
     const saved = localStorage.getItem("sidebarOpen");
     if (saved !== null) {
@@ -17,13 +18,13 @@ export const AppContextProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ Save to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("sidebarOpen", sidebarOpen);
   }, [sidebarOpen]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const currentPath = window.location.pathname;
 
     if (token) {
       fetch(`${baseUrl}${ApiEndPoints.authCheck}`, {
@@ -38,15 +39,21 @@ export const AppContextProvider = ({ children }) => {
         })
         .then((data) => {
           setUser(data);
-          navigate("/dashboard");
+          if (!publicRoutes.includes(currentPath)) {
+            navigate("/dashboard");
+          }
         })
         .catch(() => {
           localStorage.removeItem("token");
           setUser(null);
-          navigate("/home");
+          if (!publicRoutes.includes(currentPath)) {
+            navigate("/home");
+          }
         });
     } else {
-      navigate("/home");
+      if (!publicRoutes.includes(currentPath)) {
+        navigate("/home");
+      }
     }
   }, []);
 
