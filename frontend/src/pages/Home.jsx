@@ -1,8 +1,8 @@
 import NavbarHome from "../components/NavbarHome.jsx";
 import Footer from "../components/Footer.jsx";
 import { assets } from "../assets/assets.js";
-import budgetitSS2 from "../assets/budgetit ss 2.png";
-import budgetitSS2white from "../assets/budgetit ss 2 white.png";
+import budgetitSS2 from "../assets/budgetit_ss_2.png";
+import budgetitSS2white from "../assets/budgetit_ss_2_white.png";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
