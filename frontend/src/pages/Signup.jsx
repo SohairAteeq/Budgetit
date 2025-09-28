@@ -16,7 +16,7 @@ import NavbarHome from "../components/NavbarHome.jsx";
 
 // Utils
 import { uploadToCloudinary } from "../util/UploadToCloudinary.jsx";
-import defaultImage2 from "../assets/defaultImage2.jpg";
+import defaultImage2 from "../assets/default_image2.jpg";
 
 const Signup = () => {
   const [fullName, setFullName] = useState("");

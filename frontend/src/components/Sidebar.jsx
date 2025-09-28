@@ -10,7 +10,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import defaultImage from "../assets/defaultImage2.jpg";
+import defaultImage from "../assets/default_image2.jpg";
 
 const Sidebar = () => {
   const { user, sidebarOpen, setSidebarOpen } = useContext(AppContext);

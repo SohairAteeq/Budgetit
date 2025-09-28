@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Menu, X, Sun, Moon, LogOut, ChevronDown } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import walletLogo from "../assets/wallet.svg";
-import defaultImage from "../assets/defaultImage2.jpg"
+import defaultImage from "../assets/default_image2.jpg"
 
 const AfterLoginNavbar = () => {
   const navigate = useNavigate();

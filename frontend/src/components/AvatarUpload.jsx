@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { assets } from "../assets/assets.js";
-import defaultImage2 from "../assets/defaultImage2.jpg"
+import defaultImage2 from "../assets/default_image2.jpg"
 
 const AvatarUpload = ({ profileImage, setProfileImage }) => {
   const [previewImage, setPreviewImage] = useState(assets.default_avatar);
